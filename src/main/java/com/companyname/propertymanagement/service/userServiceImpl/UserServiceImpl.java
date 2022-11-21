@@ -37,6 +37,16 @@ public class UserServiceImpl implements UserService
 
     @Override
     public UserDTO login(String email, String password) {
-        return null;
+
+        Optional<UserEntity> userEntity = userRepository.findByOwnerEmailAndPassword(email, password);
+        UserDTO userDTO = new UserDTO();
+        if (userEntity.isPresent())
+        {
+
+            //UserEntity userEntity1=userEntity.get();
+            BeanUtils.copyProperties(userEntity.get(), userDTO);
+        }
+        userDTO.setPassword(null);
+        return userDTO;
     }
 }
