@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.List;
+
 
 @RestController
 @RequestMapping("/api/v1/properties")
@@ -37,6 +37,14 @@ public class PropertyController<Void>
     public ResponseEntity<List<PropertyDTO>> getAllProperties()
     {
         List<PropertyDTO> allProperties=propertyService.getAllProperties();
+        ResponseEntity<List<PropertyDTO>> listResponseEntity=new ResponseEntity<>(allProperties,HttpStatus.OK);
+        return listResponseEntity;
+    }
+
+    @GetMapping("/allProperty/{userId}")
+    public ResponseEntity<List<PropertyDTO>> getPropertiesById(@PathVariable Long userId)
+    {
+        List<PropertyDTO> allProperties=propertyService.getPropertiesById(userId);
         ResponseEntity<List<PropertyDTO>> listResponseEntity=new ResponseEntity<>(allProperties,HttpStatus.OK);
         return listResponseEntity;
     }
