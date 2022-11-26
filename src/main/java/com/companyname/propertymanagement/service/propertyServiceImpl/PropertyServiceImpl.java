@@ -2,7 +2,11 @@ package com.companyname.propertymanagement.service.propertyServiceImpl;
 
 import com.companyname.propertymanagement.dto.PropertyDTO;
 import com.companyname.propertymanagement.entity.PropertyEntity;
+import com.companyname.propertymanagement.entity.UserEntity;
+import com.companyname.propertymanagement.exception.BusinessException;
+import com.companyname.propertymanagement.exception.ErrorModel;
 import com.companyname.propertymanagement.repository.PropertyRepository;
+import com.companyname.propertymanagement.repository.UserRepository;
 import com.companyname.propertymanagement.service.PropertyService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,19 +21,27 @@ import java.util.Optional;
 
     @Autowired
     private PropertyRepository propertyRepository;
+
+    @Autowired
+    private UserRepository userRepository;
     @Override
     public PropertyDTO saveProperty(PropertyDTO propertyDTO)
     {
-        PropertyEntity pe=new PropertyEntity();
-        /*pe.setAddress(propertyDTO.getAddress());
-        pe.setDescription(propertyDTO.getDescription());
-        pe.setPrice(propertyDTO.getPrice());
-        pe.setOwnerName(propertyDTO.getOwnerName());
-        pe.setOwnerEmail(propertyDTO.getOwnerEmail());
-        pe.setTitle(propertyDTO.getTitle());*/
-        BeanUtils.copyProperties(propertyDTO,pe);
-        pe=propertyRepository.save(pe);
-        BeanUtils.copyProperties(pe,propertyDTO);
+       Optional<UserEntity> opet= userRepository.findById(propertyDTO.getUserId());
+       if(opet.isPresent()) {
+           PropertyEntity pe = new PropertyEntity();
+           BeanUtils.copyProperties(propertyDTO, pe);
+           pe.setUserEntity(opet.get());
+           pe = propertyRepository.save(pe);
+           BeanUtils.copyProperties(pe, propertyDTO);
+       }else {
+           List<ErrorModel> errorModels=new ArrayList<>();
+           ErrorModel errorModel=new ErrorModel();
+           errorModel.setCode("USER_ID_NOT_VALID");
+           errorModel.setMessage("NOT_PRESENT");
+           errorModels.add(errorModel);
+           throw new BusinessException(errorModels);
+       }
         return propertyDTO;
     }
 
@@ -45,6 +57,21 @@ import java.util.Optional;
             propertyDTOS.add(propertyDTO);
         }
         return propertyDTOS;
+    }
+
+    @Override
+    public List<PropertyDTO> getPropertiesById(Long userId)
+    {
+        List<PropertyEntity> propertyEntities =propertyRepository.findAllByUserEntityId(userId);
+        List<PropertyDTO> propertyDTOS=new ArrayList<>();
+        PropertyDTO propertyDTO=new PropertyDTO();
+        for(PropertyEntity pe:propertyEntities)
+        {
+            BeanUtils.copyProperties(pe,propertyDTO);
+            propertyDTOS.add(propertyDTO);
+
+        }
+        return  propertyDTOS;
     }
 
     @Override
