@@ -1,0 +1,34 @@
+type Mutation
+{
+
+    createProperty(propertyDTO:PropertyInput):PropertyDTO
+}
+
+
+type Query
+{
+     allProperty:[PropertyDTO]
+     allPropertyByID(userId:Int):[PropertyDTO]
+}
+
+
+type PropertyDTO
+{
+id:ID!
+title:String
+description:String
+ownerEmail:String
+ownerName:String
+price:Float
+address:String
+}
+
+input PropertyInput
+{
+title:String
+description:String
+ownerEmail:String
+ownerName:String
+price:Float
+address:String
+}

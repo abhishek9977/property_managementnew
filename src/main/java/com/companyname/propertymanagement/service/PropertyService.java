@@ -11,7 +11,6 @@ public interface PropertyService
     List<PropertyDTO> getAllProperties();
     List<PropertyDTO> getPropertiesById(Long userId);
     PropertyDTO updateProperty(PropertyDTO propertyDTO,Long propertyId);
-
     PropertyDTO updateDescription(PropertyDTO propertyDTO,Long propertyId);
 
     void delete(Long propertyId);
